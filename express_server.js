@@ -19,8 +19,10 @@ function generateRandomString() {
   return string;
 };
 
+// Middleware
 app.use(bodyParser.urlencoded({extended: true}));
 
+// Routes
 app.post("/urls", (req, res) => {
   console.log(req.body);
   const shortURL = generateRandomString();
@@ -67,10 +69,6 @@ app.get("/urls/:shortURL", (req, res) => {
 
 app.get("/urls.json", (req, res) => {
   res.json(urlDatabase);
-});
-
-app.get("/hello", (req, res) => {
-  res.send("<html><body>Hello <b>World</b></body></html>\n")
 });
 
 app.listen(PORT, () => {
