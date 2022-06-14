@@ -22,25 +22,7 @@ function generateRandomString() {
 // Middleware
 app.use(bodyParser.urlencoded({extended: true}));
 
-// Routes
-app.post("/urls", (req, res) => {
-  console.log(req.body);
-  const shortURL = generateRandomString();
-  urlDatabase[shortURL] = req.body.longURL;
-  res.redirect(`/urls/${shortURL}`);
-});
-
-app.post("/urls/:shortURL/delete", (req, res) => {
-  delete urlDatabase[req.params.shortURL];
-  res.redirect("/urls");
-});
-
-app.post("/urls/:shortURL", (req, res) => {
-  console.log(req.params);
-  const shortURL = req.params.shortURL;
-  urlDatabase[shortURL] = req.body.longURL;
-  res.redirect("/urls");
-});
+// Routes: GET
 
 app.get("/", (req, res) => {
   res.redirect("/urls");
@@ -69,6 +51,27 @@ app.get("/urls/:shortURL", (req, res) => {
 
 app.get("/urls.json", (req, res) => {
   res.json(urlDatabase);
+});
+
+// Routes: POST
+
+app.post("/urls", (req, res) => {
+  console.log(req.body);
+  const shortURL = generateRandomString();
+  urlDatabase[shortURL] = req.body.longURL;
+  res.redirect(`/urls/${shortURL}`);
+});
+
+app.post("/urls/:shortURL/delete", (req, res) => {
+  delete urlDatabase[req.params.shortURL];
+  res.redirect("/urls");
+});
+
+app.post("/urls/:shortURL", (req, res) => {
+  console.log(req.params);
+  const shortURL = req.params.shortURL;
+  urlDatabase[shortURL] = req.body.longURL;
+  res.redirect("/urls");
 });
 
 app.listen(PORT, () => {
