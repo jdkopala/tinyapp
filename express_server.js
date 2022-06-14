@@ -22,11 +22,17 @@ function generateRandomString() {
 app.use(bodyParser.urlencoded({extended: true}));
 
 app.post("/urls", (req, res) => {
-  const shortURL = generateRandomString();
   console.log(req.body);
+  const shortURL = generateRandomString();
   urlDatabase[shortURL] = req.body.longURL;
   res.redirect(`/urls/${shortURL}`);
-})
+});
+
+app.post("/urls/:shortURL/delete", (req, res) => {
+  console.log(req.params);
+  delete urlDatabase[req.params.shortURL];
+  res.redirect("/urls");
+});
 
 app.get("/", (req, res) => {
   res.send("Hello!");
@@ -48,7 +54,6 @@ app.get("/urls/new", (req, res) => {
 });
 
 app.get("/urls/:shortURL", (req, res) => {
-    console.log(req.params);
     const longURL = urlDatabase[req.params.shortURL];
     const templateVars = { shortURL: req.params.shortURL, longURL };
     res.render("urls_show", templateVars);
