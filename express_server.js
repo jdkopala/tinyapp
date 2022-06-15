@@ -18,10 +18,10 @@ const urlDatabase = {
 const checkUserEmails = (userEmail) => {
   for (let u in users) {
     if (userEmail === users[u].email) {
-      return true;
+      return users[u];
     }
   }
-  return false;
+  return null;
 };
 
 const generateRandomString = () => {
@@ -134,18 +134,15 @@ app.post("/register", (req, res) => {
 app.post("/login", (req, res) => {
   const candidateUserEmail = req.body.email;
   const candidatePassword = req.body.password;
-
-  if (!checkUserEmails(candidateUserEmail)) {
+  let user = checkUserEmails(candidateUserEmail)
+  if (!user) {
     res.status(403).send("That user does not exist");
-  };
-  for (let u in users) {
-    if (candidateUserEmail === users[u].email &&
-      candidatePassword === users[u].password) {
-        res.cookie("userId", users[u].id);
+  } else {
+    if (candidateUserEmail === user.email &&
+      candidatePassword === user.password) {
+        res.cookie("userId", user.id);
         res.redirect("/urls");
-    }
-    if (candidateUserEmail === users[u].email && 
-      candidatePassword !== users[u].password) {
+    } else {
       res.status(403).send("Your email or password was incorrect");
     }
   };
