@@ -11,8 +11,8 @@ const users = {
 };
 
 const urlDatabase = {
-  "B2xVn2": {"longUrl": "http://www.lighthouselabs.ca", "userId": "GtNXXT"},
-  "9sm5xK": {"longUrl": "http://www.google.com", "userId": "GtNXXT"}
+  "B2xVn2": {"longURL": "http://www.lighthouselabs.ca", "userId": "GtNXXT"},
+  "9sm5xK": {"longURL": "http://www.google.com", "userId": "GtNXXT"}
 };
 
 const checkUserEmails = (userEmail) => {
