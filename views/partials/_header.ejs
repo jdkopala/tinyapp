@@ -12,10 +12,10 @@
     </div>
     <div>
     <% if(!users[user_id]) {%>
-      <form method="POST" action="/login">
-        <input type="text" name="username" placeholder="Username">
-        <button type="submit" class="btn btn-primary">Login</button>
-      </form>
+      <div class="navbar-nav">
+        <a class="nav-item nav-link" href="/login">Login</a>
+        <a class="nav-item nav-link" href="/register">Register</a>
+      </div>
       <% } else {%>
       <form method="POST" action="/logout">
         <label for="logout" style="margin-left: 500px">Logged in as: <%= users[user_id].email %></label>

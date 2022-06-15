@@ -83,6 +83,11 @@ app.get("/register", (req, res) => {
   res.render("user_reg", templateVars);
 });
 
+app.get("/login", (req, res) => {
+  const templateVars = { urls: urlDatabase, user_id: req.cookies["user_id"], users };
+  res.render("user_login", templateVars);
+});
+
 //
 // Routes: POST
 //
@@ -110,12 +115,11 @@ app.post("/register", (req, res) => {
   let newUserPassword = req.body.password;
   if (newUserEmail === '' || newUserPassword === '') {
     console.log("Email or Password field was empty")
-    res.statusCode = 400;
-    res.redirect("/urls");
+    res.status(400).send("Email or Password field cannot be empty");
   };
   if (checkUserEmails(newUserEmail)) {
-    res.statusCode = 400;
     console.log("User email already exists");
+    res.status(400).send("User Email already exists");
   } else {
     users[newUserId] = { 
       id: newUserId,
@@ -123,8 +127,8 @@ app.post("/register", (req, res) => {
       password: newUserPassword
     };
     res.cookie("user_id", newUserId);
+    res.redirect("/urls");
   }
-  res.redirect("/urls");
 });
 
 app.post("/login", (req, res) => {
