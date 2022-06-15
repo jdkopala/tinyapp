@@ -11,8 +11,8 @@ const users = {
 };
 
 const urlDatabase = {
-  "B2xVn2": "http://www.lighthouselabs.ca",
-  "9sm5xK": "http://www.google.com"
+  "B2xVn2": {"longUrl": "http://www.lighthouselabs.ca", "userId": "GtNXXT"},
+  "9sm5xK": {"longUrl": "http://www.google.com", "userId": "GtNXXT"}
 };
 
 const checkUserEmails = (userEmail) => {
@@ -61,6 +61,9 @@ app.get("/urls", (req, res) => {
 
 app.get("/urls/new", (req, res) => {
   const templateVars = { urls: urlDatabase, user_id: req.cookies["userId"], users };
+  if(!req.cookies["userId"]) {
+    res.redirect("/login")
+  }
   res.render("urls_new", templateVars);
 });
 
@@ -80,11 +83,17 @@ app.get("/users.json", (req, res) => {
 
 app.get("/register", (req, res) => {
   const templateVars = { urls: urlDatabase, user_id: req.cookies["userId"], users };
+  if(req.cookies["userId"]) {
+    res.redirect("/urls")
+  }
   res.render("user_reg", templateVars);
 });
 
 app.get("/login", (req, res) => {
   const templateVars = { urls: urlDatabase, user_id: req.cookies["userId"], users };
+  if(req.cookies["userId"]) {
+    res.redirect("/urls")
+  }
   res.render("user_login", templateVars);
 });
 
@@ -93,9 +102,13 @@ app.get("/login", (req, res) => {
 //
 
 app.post("/urls", (req, res) => {
-  const shortURL = generateRandomString();
-  urlDatabase[shortURL] = req.body.longURL;
-  res.redirect(`/urls/${shortURL}`);
+  if(!req.cookies["userId"]) {
+    res.status(400).send("Only registered users may create tiny URLs, please log in");
+  } else {
+    const shortURL = generateRandomString();
+    urlDatabase[shortURL] = req.body.longURL;
+    res.redirect(`/urls/${shortURL}`);
+  }
 });
 
 app.post("/urls/:shortURL/delete", (req, res) => {
