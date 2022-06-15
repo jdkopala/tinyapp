@@ -11,8 +11,14 @@ const users = {
 };
 
 const urlDatabase = {
-  "B2xVn2": {"longURL": "http://www.lighthouselabs.ca", "userId": "GtNXXT"},
-  "9sm5xK": {"longURL": "http://www.google.com", "userId": "GtNXXT"}
+  "B2xVn2": {
+    "longURL": "http://www.lighthouselabs.ca", 
+    "userId": "GtNXXT"
+  },
+  "9sm5xK": {
+    "longURL": "http://www.google.com", 
+    "userId": "GtNXXT"
+  }
 };
 
 const checkUserEmails = (userEmail) => {
@@ -69,7 +75,7 @@ app.get("/urls/new", (req, res) => {
 
 app.get("/urls/:shortURL", (req, res) => {
   const longURL = urlDatabase[req.params.shortURL];
-  const templateVars = { shortURL: req.params.shortURL, longURL, user_id: req.cookies["userId"], users };
+  const templateVars = { shortURL: req.params.shortURL, urls: urlDatabase, user_id: req.cookies["userId"], users };
   res.render("urls_show", templateVars);
 });
 
