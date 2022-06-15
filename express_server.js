@@ -6,6 +6,10 @@ const PORT = 8080;
 
 app.set("view engine", "ejs");
 
+const users = {
+
+};
+
 const urlDatabase = {
   "B2xVn2": "http://www.lighthouselabs.ca",
   "9sm5xK": "http://www.google.com"
@@ -56,6 +60,10 @@ app.get("/urls.json", (req, res) => {
   res.json(urlDatabase);
 });
 
+app.get("/users.json", (req, res) => {
+  res.json(users);
+});
+
 app.get("/register", (req, res) => {
   const templateVars = { urls: urlDatabase, username: req.cookies["username"] };
   res.render("user_reg", templateVars);
@@ -79,6 +87,18 @@ app.post("/urls/:shortURL", (req, res) => {
   console.log(req.params);
   const shortURL = req.params.shortURL;
   urlDatabase[shortURL] = req.body.longURL;
+  res.redirect("/urls");
+});
+
+app.post("/register", (req, res) => {
+  let newUserId = generateRandomString();
+  let newUser = users[newUserId] = { 
+    id: newUserId,
+    email: req.body.email,
+    password: req.body.password
+  };
+  res.cookie("user_id", newUserId);
+  console.log(users);
   res.redirect("/urls");
 });
 
