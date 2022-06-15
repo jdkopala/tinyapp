@@ -25,10 +25,10 @@ const checkUserEmails = (userEmail) => {
 };
 
 const generateRandomString = () => {
-  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
   let string = '';
   for (let i = 0; i < 6; i++) {
-    string += chars[Math.floor(Math.random() * chars.length)]
+    string += chars[Math.floor(Math.random() * chars.length)];
   }
   return string;
 };
@@ -49,25 +49,25 @@ app.get("/", (req, res) => {
 });
 
 app.get("/u/:shortURL", (req, res) => {
-  console.log(req.params)
-  const longURL = urlDatabase[req.params.shortURL]
+  console.log(req.params);
+  const longURL = urlDatabase[req.params.shortURL];
   res.redirect(longURL);
 });
 
 app.get("/urls", (req, res) => {
-  const templateVars = { urls: urlDatabase, user_id: req.cookies["user_id"], users };
+  const templateVars = { urls: urlDatabase, user_id: req.cookies["userId"], users };
   res.render("urls_index", templateVars);
 });
 
 app.get("/urls/new", (req, res) => {
-  const templateVars = { urls: urlDatabase, user_id: req.cookies["user_id"], users };
+  const templateVars = { urls: urlDatabase, user_id: req.cookies["userId"], users };
   res.render("urls_new", templateVars);
 });
 
 app.get("/urls/:shortURL", (req, res) => {
-    const longURL = urlDatabase[req.params.shortURL];
-    const templateVars = { shortURL: req.params.shortURL, longURL, user_id: req.cookies["user_id"], users };
-    res.render("urls_show", templateVars);
+  const longURL = urlDatabase[req.params.shortURL];
+  const templateVars = { shortURL: req.params.shortURL, longURL, user_id: req.cookies["userId"], users };
+  res.render("urls_show", templateVars);
 });
 
 app.get("/urls.json", (req, res) => {
@@ -79,12 +79,12 @@ app.get("/users.json", (req, res) => {
 });
 
 app.get("/register", (req, res) => {
-  const templateVars = { urls: urlDatabase, user_id: req.cookies["user_id"], users };
+  const templateVars = { urls: urlDatabase, user_id: req.cookies["userId"], users };
   res.render("user_reg", templateVars);
 });
 
 app.get("/login", (req, res) => {
-  const templateVars = { urls: urlDatabase, user_id: req.cookies["user_id"], users };
+  const templateVars = { urls: urlDatabase, user_id: req.cookies["userId"], users };
   res.render("user_login", templateVars);
 });
 
@@ -114,34 +114,47 @@ app.post("/register", (req, res) => {
   let newUserEmail = req.body.email;
   let newUserPassword = req.body.password;
   if (newUserEmail === '' || newUserPassword === '') {
-    console.log("Email or Password field was empty")
+    console.log("Email or Password field was empty");
     res.status(400).send("Email or Password field cannot be empty");
-  };
+  }
   if (checkUserEmails(newUserEmail)) {
     console.log("User email already exists");
     res.status(400).send("User Email already exists");
   } else {
-    users[newUserId] = { 
+    users[newUserId] = {
       id: newUserId,
       email: newUserEmail,
       password: newUserPassword
     };
-    res.cookie("user_id", newUserId);
+    res.cookie("userId", newUserId);
     res.redirect("/urls");
   }
 });
 
 app.post("/login", (req, res) => {
-  res.cookie("user_id", req.body.username);
-  res.redirect("/urls");
+  const candidateUserEmail = req.body.email;
+  const candidatePassword = req.body.password;
+
+  if (!checkUserEmails(candidateUserEmail)) {
+    res.status(403).send("That user does not exist");
+  };
+  for (let u in users) {
+    if (candidateUserEmail === users[u].email &&
+      candidatePassword === users[u].password) {
+        res.cookie("userId", users[u].id);
+        res.redirect("/urls");
+    } else {
+      res.status(403).send("Your email or password was incorrect");
+    }
+  };
 });
 
 app.post("/logout", (req, res) => {
-  res.clearCookie("user_id");
+  res.clearCookie("userId");
   res.redirect("/urls");
 });
 
 // Listen command to start server
 app.listen(PORT, () => {
-  console.log(`TinyAPP listening on port ${PORT}!`)
+  console.log(`TinyAPP listening on port ${PORT}!`);
 });
