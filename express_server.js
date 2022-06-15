@@ -114,11 +114,9 @@ app.post("/register", (req, res) => {
   let newUserEmail = req.body.email;
   let newUserPassword = req.body.password;
   if (newUserEmail === '' || newUserPassword === '') {
-    console.log("Email or Password field was empty");
     res.status(400).send("Email or Password field cannot be empty");
   }
   if (checkUserEmails(newUserEmail)) {
-    console.log("User email already exists");
     res.status(400).send("User Email already exists");
   } else {
     users[newUserId] = {
@@ -140,12 +138,13 @@ app.post("/login", (req, res) => {
   } else {
     if (candidateUserEmail === user.email &&
       candidatePassword === user.password) {
+        console.log("req.cookies", req.cookies);
         res.cookie("userId", user.id);
         res.redirect("/urls");
     } else {
       res.status(403).send("Your email or password was incorrect");
     }
-  };
+  }
 });
 
 app.post("/logout", (req, res) => {
