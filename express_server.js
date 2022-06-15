@@ -143,7 +143,9 @@ app.post("/login", (req, res) => {
       candidatePassword === users[u].password) {
         res.cookie("userId", users[u].id);
         res.redirect("/urls");
-    } else {
+    }
+    if (candidateUserEmail === users[u].email && 
+      candidatePassword !== users[u].password) {
       res.status(403).send("Your email or password was incorrect");
     }
   };
