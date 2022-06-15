@@ -61,8 +61,8 @@ app.get("/urls", (req, res) => {
 
 app.get("/urls/new", (req, res) => {
   const templateVars = { urls: urlDatabase, user_id: req.cookies["userId"], users };
-  if(!req.cookies["userId"]) {
-    res.redirect("/login")
+  if (!req.cookies["userId"]) {
+    res.redirect("/login");
   }
   res.render("urls_new", templateVars);
 });
@@ -83,16 +83,16 @@ app.get("/users.json", (req, res) => {
 
 app.get("/register", (req, res) => {
   const templateVars = { urls: urlDatabase, user_id: req.cookies["userId"], users };
-  if(req.cookies["userId"]) {
-    res.redirect("/urls")
+  if (req.cookies["userId"]) {
+    res.redirect("/urls");
   }
   res.render("user_reg", templateVars);
 });
 
 app.get("/login", (req, res) => {
   const templateVars = { urls: urlDatabase, user_id: req.cookies["userId"], users };
-  if(req.cookies["userId"]) {
-    res.redirect("/urls")
+  if (req.cookies["userId"]) {
+    res.redirect("/urls");
   }
   res.render("user_login", templateVars);
 });
@@ -102,7 +102,7 @@ app.get("/login", (req, res) => {
 //
 
 app.post("/urls", (req, res) => {
-  if(!req.cookies["userId"]) {
+  if (!req.cookies["userId"]) {
     res.status(400).send("Only registered users may create tiny URLs, please log in");
   } else {
     const shortURL = generateRandomString();
@@ -145,15 +145,15 @@ app.post("/register", (req, res) => {
 app.post("/login", (req, res) => {
   const candidateUserEmail = req.body.email;
   const candidatePassword = req.body.password;
-  let user = checkUserEmails(candidateUserEmail)
+  let user = checkUserEmails(candidateUserEmail);
   if (!user) {
     res.status(403).send("That user does not exist");
   } else {
     if (candidateUserEmail === user.email &&
       candidatePassword === user.password) {
-        console.log("req.cookies", req.cookies);
-        res.cookie("userId", user.id);
-        res.redirect("/urls");
+      console.log("req.cookies", req.cookies);
+      res.cookie("userId", user.id);
+      res.redirect("/urls");
     } else {
       res.status(403).send("Your email or password was incorrect");
     }
