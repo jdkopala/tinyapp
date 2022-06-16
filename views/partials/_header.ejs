@@ -11,14 +11,14 @@
       </div>
     </div>
     <div>
-    <% if(!users[user_id]) { %>
+    <% if(!users[userId]) { %>
       <div class="navbar-nav">
         <a class="nav-item nav-link" href="/login">Login</a>
         <a class="nav-item nav-link" href="/register">Register</a>
       </div>
       <% } else { %>
       <form method="POST" action="/logout">
-        <label for="logout" style="margin-left: 500px">Logged in as: <%= users[user_id].email %></label>
+        <label for="logout" style="margin-left: 500px">Logged in as: <%= users[userId].email %></label>
         <button id="logout" type="submit" class="btn btn-danger">Logout</button>
       </form>
       <% } %>
