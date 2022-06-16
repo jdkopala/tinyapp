@@ -83,8 +83,9 @@ app.get("/urls/new", (req, res) => {
   const templateVars = { urls: urlDatabase, userUrls: urlsForUser(req.cookies["userId"]), user_id: req.cookies["userId"], users };
   if (!req.cookies["userId"]) {
     res.redirect("/login");
+  } else {
+    res.render("urls_new", templateVars);
   }
-  res.render("urls_new", templateVars);
 });
 
 app.get("/urls/:shortURL", (req, res) => {
