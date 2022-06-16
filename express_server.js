@@ -186,7 +186,6 @@ app.post("/login", (req, res) => {
   } else {
     if (candidateUserEmail === user.email &&
       candidatePassword === user.password) {
-      console.log("req.cookies", req.cookies);
       res.cookie("userId", user.id);
       res.redirect("/urls");
     } else {
