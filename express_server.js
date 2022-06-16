@@ -2,6 +2,7 @@ const express = require('express');
 const app = express();
 const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
+const { restart } = require('nodemon');
 const PORT = 8080;
 
 app.set("view engine", "ejs");
@@ -134,18 +135,26 @@ app.post("/urls", (req, res) => {
 });
 
 app.post("/urls/:shortURL/delete", (req, res) => {
-  delete urlDatabase[req.params.shortURL];
-  res.redirect("/urls");
+  if (!req.cookies["userId"]) {
+    res.status(401).send("Only registered users may delete tiny URLs, please log in")
+  } else {
+    delete urlDatabase[req.params.shortURL];
+    res.redirect("/urls");
+  }
 });
 
 app.post("/urls/:shortURL", (req, res) => {
   const shortURL = req.params.shortURL;
   const longURL = req.body.longURL;
-  urlDatabase[shortURL] = urlDatabase[shortURL] = {
-      longURL: longURL,
-      userId: req.cookies["userId"]
-    };;
-  res.redirect("/urls");
+  if (!req.cookies["userId"]) {
+    res.status(401).send("Only registered users may edit tiny URLs, please log in")
+  } else {
+    urlDatabase[shortURL] = urlDatabase[shortURL] = {
+        longURL: longURL,
+        userId: req.cookies["userId"]
+      };;
+    res.redirect("/urls");
+  }
 });
 
 app.post("/register", (req, res) => {
