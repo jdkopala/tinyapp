@@ -4,15 +4,11 @@ const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
 const { restart } = require('nodemon');
 const bcrypt = require('bcryptjs');
-const password = "purple-monkey-dinosaur";
-const hashedPassword = bcrypt.hashSync(password, 10);
 const PORT = 8080;
 
 app.set("view engine", "ejs");
 
-const users = {
-  "GtNXXT": {"id":"GtNXXT", "email":"test@test.com", "password":"12345"}
-};
+const users = {};
 
 const urlDatabase = {
   "B2xVn2": {
@@ -172,6 +168,7 @@ app.post("/register", (req, res) => {
   let newUserId = generateRandomString();
   let newUserEmail = req.body.email;
   let newUserPassword = req.body.password;
+  let hashedPassword = bcrypt.hashSync(newUserPassword, 10);
   if (newUserEmail === '' || newUserPassword === '') {
     res.status(400).send("Email or Password field cannot be empty");
   }
@@ -181,7 +178,7 @@ app.post("/register", (req, res) => {
     users[newUserId] = {
       id: newUserId,
       email: newUserEmail,
-      password: newUserPassword
+      password: hashedPassword
     };
     res.cookie("userId", newUserId);
     res.redirect("/urls");
@@ -192,11 +189,12 @@ app.post("/login", (req, res) => {
   const candidateUserEmail = req.body.email;
   const candidatePassword = req.body.password;
   let user = checkUserEmails(candidateUserEmail);
+  let hashCheck = bcrypt.compareSync(candidatePassword, user.password);
   if (!user) {
     res.status(403).send("That user does not exist");
   } else {
     if (candidateUserEmail === user.email &&
-      candidatePassword === user.password) {
+      hashCheck) {
       res.cookie("userId", user.id);
       res.redirect("/urls");
     } else {
