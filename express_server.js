@@ -4,6 +4,7 @@ const bodyParser = require("body-parser");
 const cookieSession = require('cookie-session');
 const { restart } = require('nodemon');
 const bcrypt = require('bcryptjs');
+const { generateRandomString, checkUserEmails, urlsForUser} = require('./helpers')
 const PORT = 8080;
 
 app.set("view engine", "ejs");
@@ -11,37 +12,6 @@ app.set("view engine", "ejs");
 const users = {};
 
 const urlDatabase = {};
-
-const urlsForUser = (id) => {
-  let filterData = {};
-  for (let url in urlDatabase) {
-    if (urlDatabase[url].userId === id) {
-      filterData[url] = {
-        longURL: urlDatabase[url].longURL,
-        userId: id
-      }
-    }
-  }
-  return filterData;
-};
-
-const checkUserEmails = (userEmail) => {
-  for (let u in users) {
-    if (userEmail === users[u].email) {
-      return users[u];
-    }
-  }
-  return null;
-};
-
-const generateRandomString = () => {
-  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-  let string = '';
-  for (let i = 0; i < 6; i++) {
-    string += chars[Math.floor(Math.random() * chars.length)];
-  }
-  return string;
-};
 
 //
 // Middleware
@@ -74,12 +44,12 @@ app.get("/u/:shortURL", (req, res) => {
 });
 
 app.get("/urls", (req, res) => {
-  const templateVars = { urls: urlDatabase, userUrls: urlsForUser(req.session.userId), user_id: req.session.userId, users };
+  const templateVars = { urls: urlDatabase, userUrls: urlsForUser(req.session.userId, urlDatabase), user_id: req.session.userId, users };
   res.render("urls_index", templateVars);
 });
 
 app.get("/urls/new", (req, res) => {
-  const templateVars = { urls: urlDatabase, userUrls: urlsForUser(req.session.userId), user_id: req.session.userId, users };
+  const templateVars = { urls: urlDatabase, userUrls: urlsForUser(req.session.userId, urlDatabase), user_id: req.session.userId, users };
   if (!req.session.userId) {
     res.redirect("/login");
   } else {
@@ -88,7 +58,7 @@ app.get("/urls/new", (req, res) => {
 });
 
 app.get("/urls/:shortURL", (req, res) => {
-  const templateVars = { shortURL: req.params.shortURL, urls: urlDatabase, userUrls: urlsForUser(req.session.userId), user_id: req.session.userId, users };
+  const templateVars = { shortURL: req.params.shortURL, urls: urlDatabase, userUrls: urlsForUser(req.session.userId, urlDatabase), user_id: req.session.userId, users };
   res.render("urls_show", templateVars);
 });
 
@@ -167,7 +137,7 @@ app.post("/register", (req, res) => {
   if (newUserEmail === '' || newUserPassword === '') {
     res.status(400).send("Email or Password field cannot be empty");
   }
-  if (checkUserEmails(newUserEmail)) {
+  if (checkUserEmails(newUserEmail, users)) {
     res.status(400).send("User Email already exists");
   } else {
     users[newUserId] = {
@@ -184,7 +154,7 @@ app.post("/register", (req, res) => {
 app.post("/login", (req, res) => {
   const candidateUserEmail = req.body.email;
   const candidatePassword = req.body.password;
-  let user = checkUserEmails(candidateUserEmail);
+  let user = checkUserEmails(candidateUserEmail, users);
   if (!user) {
     res.status(403).send("That user does not exist");
   } else {
