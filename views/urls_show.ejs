@@ -11,7 +11,7 @@
     <div class="card text-center">
         <div class="card-header"></div>
         <div class="card-body">
-          <% if (users[user_id]) {%>
+          <% if (users[userId]) {%>
           <h5 class="card-title">TinyURL for: <%= userUrls[shortURL]["longURL"] %></h5>
           <% } else { %>
           <h5 class="card-title">TinyURL for: <%= urls[shortURL]["longURL"] %></h5>
@@ -23,7 +23,7 @@
         <h3>Edit TinyURL</h3>
         <form class="form-inline" action="/urls/<%- shortURL %>" method="POST">
           <div class="form-group mb-2">
-          <% if (users[user_id]) { %>
+          <% if (users[userId]) { %>
           <label for="longURL" style="margin-left: 450px">Enter a URL:</label>
           <input class="form-control" type="text" name="longURL" placeholder="http://" style="width: 300px; margin: 1em;">
           <button type="submit" class="btn btn-primary">Submit</button>

@@ -22,7 +22,7 @@
         </tr>
       </thead>
       <tbody>
-        <% if (users[user_id]) { %>
+        <% if (users[userId]) { %>
           <% for(let url in userUrls) { %>
           <tr>
               <td><%= url %></td>
@@ -38,6 +38,7 @@
         <% } %>
       </tbody>
     </table>
+    <a href="/urls/new">Create a new short URL</a>
   </main>
   <!-- Bootstrap JS -->
   <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>

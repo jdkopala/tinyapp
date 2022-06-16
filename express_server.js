@@ -4,7 +4,7 @@ const bodyParser = require("body-parser");
 const cookieSession = require('cookie-session');
 const { restart } = require('nodemon');
 const bcrypt = require('bcryptjs');
-const { generateRandomString, checkUserEmails, urlsForUser} = require('./helpers')
+const { generateRandomString, checkUserEmails, urlsForUser} = require('./helpers');
 const PORT = 8080;
 
 app.set("view engine", "ejs");
@@ -18,10 +18,10 @@ const urlDatabase = {};
 //
 
 app.use(bodyParser.urlencoded({extended: true}));
-app.use(cookieSession( {
+app.use(cookieSession({
   name: "tinyApp",
   keys: ['Ususally', 'These', 'Are', 'a', 'secret'],
-  maxAge: 24 * 60 * 60 * 1000 // This will make the cookie last 24hrs
+  maxAge: 60 * 60 * 1000 // This will make the cookie last 24hrs
 }));
 
 //
@@ -29,27 +29,31 @@ app.use(cookieSession( {
 //
 
 app.get("/", (req, res) => {
-  res.redirect("/urls");
+  if (req.session.userId) {
+    res.redirect("/urls");
+  } else {
+    res.redirect("/login");
+  }
 });
 
 app.get("/u/:shortURL", (req, res) => {
   const shortURL = req.params.shortURL;
   let keys = Object.keys(urlDatabase);
   if (keys.includes(shortURL)) {
-      const longURL = urlDatabase[shortURL]["longURL"];
-      res.redirect(longURL);
-    } else {
-      res.status(404).send("Tiny URL does not exist.");
-    }
+    const longURL = urlDatabase[shortURL]["longURL"];
+    res.redirect(longURL);
+  } else {
+    res.status(404).send("Tiny URL does not exist.");
+  }
 });
 
 app.get("/urls", (req, res) => {
-  const templateVars = { urls: urlDatabase, userUrls: urlsForUser(req.session.userId, urlDatabase), user_id: req.session.userId, users };
+  const templateVars = { urls: urlDatabase, userUrls: urlsForUser(req.session.userId, urlDatabase), userId: req.session.userId, users };
   res.render("urls_index", templateVars);
 });
 
 app.get("/urls/new", (req, res) => {
-  const templateVars = { urls: urlDatabase, userUrls: urlsForUser(req.session.userId, urlDatabase), user_id: req.session.userId, users };
+  const templateVars = { urls: urlDatabase, userUrls: urlsForUser(req.session.userId, urlDatabase), userId: req.session.userId, users };
   if (!req.session.userId) {
     res.redirect("/login");
   } else {
@@ -58,8 +62,16 @@ app.get("/urls/new", (req, res) => {
 });
 
 app.get("/urls/:shortURL", (req, res) => {
-  const templateVars = { shortURL: req.params.shortURL, urls: urlDatabase, userUrls: urlsForUser(req.session.userId, urlDatabase), user_id: req.session.userId, users };
-  res.render("urls_show", templateVars);
+  const templateVars = { shortURL: req.params.shortURL, urls: urlDatabase, userUrls: urlsForUser(req.session.userId, urlDatabase), userId: req.session.userId, users };
+  let shortURL = req.params.shortURL;
+  let keys = Object.keys(urlDatabase);
+  if (!keys.includes(shortURL)) {
+    res.status(404).send("Tiny URL does not exist");
+  } else if (req.session.userId !== urlDatabase[shortURL].userId) {
+    res.status(401).send("You don't own this Tiny URL");
+  } else {
+    res.render("urls_show", templateVars);
+  }
 });
 
 app.get("/urls.json", (req, res) => {
@@ -71,7 +83,7 @@ app.get("/users.json", (req, res) => {
 });
 
 app.get("/register", (req, res) => {
-  const templateVars = { urls: urlDatabase, user_id: req.session.userId, users };
+  const templateVars = { urls: urlDatabase, userId: req.session.userId, users };
   if (req.session.userId) {
     res.redirect("/urls");
   } else {
@@ -80,7 +92,7 @@ app.get("/register", (req, res) => {
 });
 
 app.get("/login", (req, res) => {
-  const templateVars = { urls: urlDatabase, user_id: req.session.userId, users };
+  const templateVars = { urls: urlDatabase, userId: req.session.userId, users };
   if (req.session.userId) {
     res.redirect("/urls");
   } else {
@@ -107,8 +119,11 @@ app.post("/urls", (req, res) => {
 });
 
 app.post("/urls/:shortURL/delete", (req, res) => {
+  const shortURL = req.params.shortURL;
   if (!req.session.userId) {
-    res.status(401).send("Only registered users may delete tiny URLs, please log in")
+    res.status(401).send("Only registered users may delete tiny URLs, please log in");
+  } else if (req.session.userId !== urlDatabase[shortURL].userId) {
+    res.status(401).send("You don't own this Tiny URL");
   } else {
     delete urlDatabase[req.params.shortURL];
     res.redirect("/urls");
@@ -119,12 +134,12 @@ app.post("/urls/:shortURL", (req, res) => {
   const shortURL = req.params.shortURL;
   const longURL = req.body.longURL;
   if (!req.session.userId) {
-    res.status(401).send("Only registered users may edit tiny URLs, please log in")
+    res.status(401).send("Only registered users may edit tiny URLs, please log in");
   } else {
     urlDatabase[shortURL] = urlDatabase[shortURL] = {
-        longURL: longURL,
-        userId: req.session.userId
-      };;
+      longURL: longURL,
+      userId: req.session.userId
+    };
     res.redirect("/urls");
   }
 });
@@ -145,7 +160,6 @@ app.post("/register", (req, res) => {
       email: newUserEmail,
       password: hashedPassword
     };
-    // res.cookie("userId", newUserId);
     req.session.userId = newUserId;
     res.redirect("/urls");
   }
@@ -161,7 +175,6 @@ app.post("/login", (req, res) => {
     let hashCheck = bcrypt.compareSync(candidatePassword, user.password);
     if (candidateUserEmail === user.email &&
       hashCheck) {
-      // res.cookie("userId", user.id);
       req.session.userId = user.id;
       res.redirect("/urls");
     } else {
