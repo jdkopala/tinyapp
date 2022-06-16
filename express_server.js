@@ -28,6 +28,7 @@ app.use(cookieSession({
 // Routes: GET
 //
 
+// Hompage redirects to login page or urls depending on login status
 app.get("/", (req, res) => {
   if (req.session.userId) {
     res.redirect("/urls");
@@ -36,6 +37,7 @@ app.get("/", (req, res) => {
   }
 });
 
+// Redirect to a tinyURLs associated longURL
 app.get("/u/:shortURL", (req, res) => {
   const shortURL = req.params.shortURL;
   let keys = Object.keys(urlDatabase);
@@ -47,11 +49,13 @@ app.get("/u/:shortURL", (req, res) => {
   }
 });
 
+// View an accounts list of tinyURLs
 app.get("/urls", (req, res) => {
   const templateVars = { urls: urlDatabase, userUrls: urlsForUser(req.session.userId, urlDatabase), userId: req.session.userId, users };
   res.render("urls_index", templateVars);
 });
 
+// Open the form to create a new tinyURL
 app.get("/urls/new", (req, res) => {
   const templateVars = { urls: urlDatabase, userUrls: urlsForUser(req.session.userId, urlDatabase), userId: req.session.userId, users };
   if (!req.session.userId) {
@@ -61,6 +65,7 @@ app.get("/urls/new", (req, res) => {
   }
 });
 
+// View a tinyURL and it's associated longURL, and edit form
 app.get("/urls/:shortURL", (req, res) => {
   const templateVars = { shortURL: req.params.shortURL, urls: urlDatabase, userUrls: urlsForUser(req.session.userId, urlDatabase), userId: req.session.userId, users };
   let shortURL = req.params.shortURL;
@@ -74,14 +79,7 @@ app.get("/urls/:shortURL", (req, res) => {
   }
 });
 
-app.get("/urls.json", (req, res) => {
-  res.json(urlDatabase);
-});
-
-app.get("/users.json", (req, res) => {
-  res.json(users);
-});
-
+// Bring up the registraion form
 app.get("/register", (req, res) => {
   const templateVars = { urls: urlDatabase, userId: req.session.userId, users };
   if (req.session.userId) {
@@ -91,6 +89,7 @@ app.get("/register", (req, res) => {
   }
 });
 
+// Bring up the login form
 app.get("/login", (req, res) => {
   const templateVars = { urls: urlDatabase, userId: req.session.userId, users };
   if (req.session.userId) {
@@ -104,6 +103,7 @@ app.get("/login", (req, res) => {
 // Routes: POST
 //
 
+// Create a new url
 app.post("/urls", (req, res) => {
   if (!req.session.userId) {
     res.status(400).send("Only registered users may create tiny URLs, please log in");
@@ -118,6 +118,7 @@ app.post("/urls", (req, res) => {
   }
 });
 
+// Delete a url from the database
 app.post("/urls/:shortURL/delete", (req, res) => {
   const shortURL = req.params.shortURL;
   if (!req.session.userId) {
@@ -130,6 +131,7 @@ app.post("/urls/:shortURL/delete", (req, res) => {
   }
 });
 
+// Edit a tiny urls associated longURL
 app.post("/urls/:shortURL", (req, res) => {
   const shortURL = req.params.shortURL;
   const longURL = req.body.longURL;
@@ -144,6 +146,7 @@ app.post("/urls/:shortURL", (req, res) => {
   }
 });
 
+// Send information to create a new user account
 app.post("/register", (req, res) => {
   let newUserId = generateRandomString();
   let newUserEmail = req.body.email;
@@ -165,6 +168,7 @@ app.post("/register", (req, res) => {
   }
 });
 
+// Send info to login to an existing user account
 app.post("/login", (req, res) => {
   const candidateUserEmail = req.body.email;
   const candidatePassword = req.body.password;
@@ -183,6 +187,7 @@ app.post("/login", (req, res) => {
   }
 });
 
+// Logout of a user account and clear session cookies
 app.post("/logout", (req, res) => {
   // res.clearCookie("userId");
   req.session = null;
