@@ -3,6 +3,9 @@ const app = express();
 const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
 const { restart } = require('nodemon');
+const bcrypt = require('bcryptjs');
+const password = "purple-monkey-dinosaur";
+const hashedPassword = bcrypt.hashSync(password, 10);
 const PORT = 8080;
 
 app.set("view engine", "ejs");
@@ -70,8 +73,16 @@ app.get("/", (req, res) => {
 
 app.get("/u/:shortURL", (req, res) => {
   const shortURL = req.params.shortURL;
-  const longURL = urlDatabase[shortURL]["longURL"];
-  res.redirect(longURL);
+  let keys = [];
+  for (let url in urlDatabase) {
+    keys.push(url);
+  };
+  if (keys.includes(shortURL)) {
+      const longURL = urlDatabase[shortURL]["longURL"];
+      res.redirect(longURL);
+    } else {
+      res.status(404).send("Tiny URL does not exist. Try another");
+    }
 });
 
 app.get("/urls", (req, res) => {
