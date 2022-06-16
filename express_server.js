@@ -105,16 +105,18 @@ app.get("/register", (req, res) => {
   const templateVars = { urls: urlDatabase, user_id: req.cookies["userId"], users };
   if (req.cookies["userId"]) {
     res.redirect("/urls");
+  } else {
+    res.render("user_reg", templateVars);
   }
-  res.render("user_reg", templateVars);
 });
 
 app.get("/login", (req, res) => {
   const templateVars = { urls: urlDatabase, user_id: req.cookies["userId"], users };
   if (req.cookies["userId"]) {
     res.redirect("/urls");
+  } else {
+    res.render("user_login", templateVars);
   }
-  res.render("user_login", templateVars);
 });
 
 //
