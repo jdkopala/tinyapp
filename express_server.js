@@ -73,10 +73,7 @@ app.get("/", (req, res) => {
 
 app.get("/u/:shortURL", (req, res) => {
   const shortURL = req.params.shortURL;
-  let keys = [];
-  for (let url in urlDatabase) {
-    keys.push(url);
-  };
+  let keys = Object.keys(urlDatabase);
   if (keys.includes(shortURL)) {
       const longURL = urlDatabase[shortURL]["longURL"];
       res.redirect(longURL);
