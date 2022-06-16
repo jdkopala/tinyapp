@@ -21,7 +21,7 @@
     </div>
       <div class="card-footer text-muted text-center">
         <h3>Edit TinyURL</h3>
-        <form class="form-inline" action="/urls/<%- shortURL %>" method="POST">
+        <form class="form-inline" method="POST" action="/urls/<%- shortURL %>">
           <div class="form-group mb-2">
           <% if (users[userId]) { %>
           <label for="longURL" style="margin-left: 450px">Enter a URL:</label>

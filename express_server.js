@@ -20,8 +20,8 @@ const urlDatabase = {};
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(cookieSession({
   name: "tinyApp",
-  keys: ['Ususally', 'These', 'Are', 'a', 'secret'],
-  maxAge: 60 * 60 * 1000 // This will make the cookie last 24hrs
+  keys: ['Usually', 'These', 'Are', 'a', 'secret'],
+  maxAge: 60 * 60 * 1000 // This will make the cookie last 1hr
 }));
 
 //
