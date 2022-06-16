@@ -112,7 +112,11 @@ app.post("/urls", (req, res) => {
     res.status(400).send("Only registered users may create tiny URLs, please log in");
   } else {
     const shortURL = generateRandomString();
-    urlDatabase[shortURL] = req.body.longURL;
+    const longURL = req.body.longURL;
+    urlDatabase[shortURL] = {
+      longURL: longURL,
+      userId: req.cookies["userId"]
+    };
     res.redirect(`/urls/${shortURL}`);
   }
 });
