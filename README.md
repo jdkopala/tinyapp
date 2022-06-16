@@ -4,8 +4,8 @@ TinyApp is a full stack web application built with Node and Express that allows 
 
 ## Final Product
 
-!["This is an example of a users index of tinyURLs"](https://github.com/jdkopala/tinyapp/commit/099aa140aa876f5ae303d75a7d38c15a9cc79188#diff-b44eccb960046340ba334bc7e5f9e9abfbff52ca501697ad54f4f39dc1d2eb72)
-!["The TinyAPP registration page"](https://github.com/jdkopala/tinyapp/commit/099aa140aa876f5ae303d75a7d38c15a9cc79188#diff-f589718f825e32e209fecac22addd01bc3adbfeda06ba78b02674f7f5a26c584)
+!["This is an example of a users index of tinyURLs"](https://github.com/jdkopala/tinyapp/blob/main/docs/urls_index.jpg?raw=true)
+!["The TinyAPP registration page"](https://github.com/jdkopala/tinyapp/blob/main/docs/Registration_page.jpg?raw=true)
 
 ## Dependencies
 
