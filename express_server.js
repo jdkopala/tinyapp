@@ -51,13 +51,21 @@ app.get("/u/:shortURL", (req, res) => {
 
 // View an accounts list of tinyURLs
 app.get("/urls", (req, res) => {
-  const templateVars = { urls: urlDatabase, userUrls: urlsForUser(req.session.userId, urlDatabase), userId: req.session.userId, users };
+  const templateVars = { urls: urlDatabase, 
+    userUrls: urlsForUser(req.session.userId, 
+      urlDatabase), 
+      userId: req.session.userId, 
+      users };
   res.render("urls_index", templateVars);
 });
 
 // Open the form to create a new tinyURL
 app.get("/urls/new", (req, res) => {
-  const templateVars = { urls: urlDatabase, userUrls: urlsForUser(req.session.userId, urlDatabase), userId: req.session.userId, users };
+  const templateVars = { urls: urlDatabase, 
+    userUrls: urlsForUser(req.session.userId, 
+    urlDatabase), 
+    userId: req.session.userId, 
+    users };
   if (!req.session.userId) {
     res.redirect("/login");
   } else {
@@ -67,7 +75,11 @@ app.get("/urls/new", (req, res) => {
 
 // View a tinyURL and it's associated longURL, and edit form
 app.get("/urls/:shortURL", (req, res) => {
-  const templateVars = { shortURL: req.params.shortURL, urls: urlDatabase, userUrls: urlsForUser(req.session.userId, urlDatabase), userId: req.session.userId, users };
+  const templateVars = { shortURL: req.params.shortURL, 
+    urls: urlDatabase, 
+    userUrls: urlsForUser(req.session.userId, urlDatabase), 
+    userId: req.session.userId, 
+    users };
   let shortURL = req.params.shortURL;
   let keys = Object.keys(urlDatabase);
   if (!keys.includes(shortURL)) {
@@ -79,9 +91,11 @@ app.get("/urls/:shortURL", (req, res) => {
   }
 });
 
-// Bring up the registraion form
+// Bring up the registration form
 app.get("/register", (req, res) => {
-  const templateVars = { urls: urlDatabase, userId: req.session.userId, users };
+  const templateVars = { urls: urlDatabase, 
+    userId: req.session.userId, 
+    users };
   if (req.session.userId) {
     res.redirect("/urls");
   } else {
@@ -91,7 +105,9 @@ app.get("/register", (req, res) => {
 
 // Bring up the login form
 app.get("/login", (req, res) => {
-  const templateVars = { urls: urlDatabase, userId: req.session.userId, users };
+  const templateVars = { urls: urlDatabase, 
+    userId: req.session.userId, 
+    users };
   if (req.session.userId) {
     res.redirect("/urls");
   } else {
